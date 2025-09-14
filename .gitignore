@@ -14,4 +14,4 @@ vendor
 # /.idea
 # /.vscode
 #
-#
+storage/framework/*
