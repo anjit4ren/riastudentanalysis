@@ -13,8 +13,5 @@ vendor
 # yarn-error.log
 # /.idea
 # /.vscode
-<<<<<<< HEAD
 #
-=======
->>>>>>> dev
 storage/framework/*
