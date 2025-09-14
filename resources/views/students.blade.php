@@ -43,7 +43,7 @@
                             <div class="col-xxl-2 col-lg-4">
                                 <div class="position-relative">
                                     <select class="form-select" id="academicYearFilter">
-                                        <option value="">Academic Year</option>
+                                        <option value="" disabled> Select Academic Year</option>
 
                                         @foreach ($academicYears as $year)
                                             <option value="{{ $year->id }}" {{ $year->running == 1 ? 'selected' : '' }}>

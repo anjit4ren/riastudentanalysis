@@ -151,7 +151,7 @@ function renderStudents(students) {
                                             <i class="bx bx-dots-vertical-rounded"></i>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="/students/details/${student.id}">View Profile</a></li>
+                                            <li><a class="dropdown-item" href="/students/profile/${student.id}">View Profile</a></li>
                                             <li><a class="dropdown-item" onclick="openStudentModal(${student.id})" >Edit</a></li>
                                            
                                             <li><hr class="dropdown-divider"></li>

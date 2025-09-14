@@ -1,5 +1,5 @@
 <?php $__env->startSection('title'); ?>
-    <?php echo app('translator')->get('translation.Candidate'); ?> <?php echo app('translator')->get('translation.Overview'); ?>
+   <?php echo e($student->name); ?> | Student Profile
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -363,13 +363,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="resultModalTitle">Operation Result</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    
                 </div>
                 <div class="modal-body" id="resultModalBody">
                     <!-- Content will be filled by JavaScript -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    
                 </div>
             </div>
         </div>
