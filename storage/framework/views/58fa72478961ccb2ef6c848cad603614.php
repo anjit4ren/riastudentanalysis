@@ -41,7 +41,7 @@
                             <div class="col-xxl-2 col-lg-4">
                                 <div class="position-relative">
                                     <select class="form-select" id="academicYearFilter">
-                                        <option value="">Academic Year</option>
+                                        <option value="" disabled> Select Academic Year</option>
 
                                         <?php $__currentLoopData = $academicYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($year->id); ?>" <?php echo e($year->running == 1 ? 'selected' : ''); ?>>

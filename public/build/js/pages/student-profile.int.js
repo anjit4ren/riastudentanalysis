@@ -201,7 +201,7 @@ function saveAttendanceCellValue($input) {
 
     // Validate inputs
     if (newValue === '' || isNaN(newValue) || newValue < 0) {
-        toastr.error('Please enter a valid number (0 or higher)');
+        // toastr.error('Please enter a valid number (0 or higher)');
         $cell.text(originalValue || '');
         return;
     }
@@ -508,8 +508,8 @@ function populateMarksTable(marks) {
     marks.forEach((mark, i) => {
         const row = `
             <tr data-id="${mark.subject_id}">
-                <td data-field="subject_code">${i + 1}</td>
-                <td data-field="subject_name">${(mark.subject && mark.subject.subject_name) ? mark.subject.subject_name : 'N/A'}</td>
+                <td >${i + 1}</td>
+                <td >${(mark.subject && mark.subject.subject_name) ? mark.subject.subject_name : 'N/A'}</td>
                 <td data-field="marks_obtained" class="editable">${mark.marks_obtained || ''}</td>
                 <td data-field="grade" class="editable">${mark.grade || ''}</td>
                 <td data-field="grade_point" class="editable">${mark.grade_point || ''}</td>
