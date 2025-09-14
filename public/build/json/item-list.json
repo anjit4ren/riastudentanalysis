@@ -1,0 +1,81 @@
+[
+    {
+        "id": 1,
+        "itemName": "Momo",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "1",
+        "status": "active"
+    },{
+        "id": 2,
+        "itemName": "Thukpa",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "2",
+        "status": "active"
+    },{
+        "id": 3,
+        "itemName": "Chatpate",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "Phoenix",
+        "order": "3",
+        "status": "active"
+    },{
+        "id": 4,
+        "itemName": "Bhatora",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "4",
+        "status": "inactive"
+    },{
+        "id": 5,
+        "itemName": "Chaumin",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "Louisiana",
+        "order": "5",
+        "status": "inactive"
+    },{
+        "id": 6,
+        "itemName": "Bread",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "Oakridge Lane Richardson",
+        "order": "6",
+        "status": "active"
+    },{
+        "id": 7,
+        "itemName": "Butter",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "7",
+        "status": "inactive"
+    },{
+        "id": 8,
+        "itemName": "icecreame",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "8",
+        "status": "active"
+    },{
+        "id": 9,
+        "itemName": "Tea",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "9",
+        "positions": "2",
+        "status": "inactive"
+    },{
+        "id": 10,
+        "itemName": "Coffee",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "California",
+        "order": "10",
+        "status": "active"
+    },{
+        "id": 11,
+        "itemName": "Lemon Water",
+        "sellingPrice": "Rs. 100/-",
+        "categoryName": "Louisiana",
+        "order": "11",
+        "status": "inactive"
+    }
+]
