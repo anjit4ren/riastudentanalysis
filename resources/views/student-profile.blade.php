@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-   {{ $student->name }} | Student Profile
+    {{ $student->name }} | Student Profile
 @endsection
 
 @section('content')
@@ -36,8 +36,10 @@
                                     <div>
                                         <h2 class="h4 mb-1">{{ $student->name }}</h2>
                                         <div class="d-flex align-items-center flex-wrap text-muted mb-2">
-                                            <span class="me-3"><i class="fas fa-id-card me-1"></i> EID: {{ $student->eid }}</span>
-                                            <span class="me-3"><i class="fas fa-hashtag me-1"></i> Roll No: {{ $student->roll_no }}</span>
+                                            <span class="me-3"><i class="fas fa-id-card me-1"></i> EID:
+                                                {{ $student->eid }}</span>
+                                            <span class="me-3"><i class="fas fa-hashtag me-1"></i> Roll No:
+                                                {{ $student->roll_no }}</span>
                                             <span class="badge {{ $student->status ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $student->status ? 'Active' : 'Inactive' }}
                                             </span>
@@ -47,10 +49,10 @@
                                         <button class="btn btn-outline-primary btn-sm">
                                             <i class="fas fa-edit me-1"></i> Generate Report
                                         </button>
-                                      
+
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mt-3">
                                     <div class="col-md-6 col-lg-3">
                                         <div class="border rounded p-3 bg-light">
@@ -91,30 +93,39 @@
                     <div class="card-header bg-white py-3 border-bottom">
                         <ul class="nav nav-tabs card-header-tabs" id="studentTab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="academics-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#academics" type="button" role="tab" aria-controls="academics" 
+                                <button class="nav-link active" id="academics-tab" data-bs-toggle="tab"
+                                    data-bs-target="#academics" type="button" role="tab" aria-controls="academics"
                                     aria-selected="true">
                                     <i class="fas fa-graduation-cap me-1"></i> Academic History
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#attendance" type="button" role="tab" aria-controls="attendance" 
+                                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab"
+                                    data-bs-target="#attendance" type="button" role="tab" aria-controls="attendance"
                                     aria-selected="false">
                                     <i class="fas fa-calendar-alt me-1"></i> Attendance
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="examination-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#examination" type="button" role="tab" aria-controls="examination" 
+                                <button class="nav-link" id="examination-tab" data-bs-toggle="tab"
+                                    data-bs-target="#examination" type="button" role="tab" aria-controls="examination"
                                     aria-selected="false">
                                     <i class="fas fa-file-alt me-1"></i> Examination
                                 </button>
                             </li>
+
+
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="details-tab" data-bs-toggle="tab" 
-                                    data-bs-target="#details" type="button" role="tab" aria-controls="details" 
+                                <button class="nav-link" id="discipline-tab" data-bs-toggle="tab"
+                                    data-bs-target="#discipline" type="button" role="tab" aria-controls="discipline"
                                     aria-selected="false">
+                                    <i class="fas fa-sticky-note me-1"></i> Discipline Notes
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
+                                    type="button" role="tab" aria-controls="details" aria-selected="false">
                                     <i class="fas fa-info-circle me-1"></i> Personal Details
                                 </button>
                             </li>
@@ -123,7 +134,8 @@
                     <div class="card-body">
                         <div class="tab-content" id="studentTabContent">
                             <!-- Academics Tab -->
-                            <div class="tab-pane fade show active" id="academics" role="tabpanel" aria-labelledby="academics-tab">
+                            <div class="tab-pane fade show active" id="academics" role="tabpanel"
+                                aria-labelledby="academics-tab">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h5 class="mb-0">Academic Records</h5>
                                     <button class="btn btn-primary" id="promoteStudentBtn" data-bs-toggle="modal"
@@ -131,7 +143,7 @@
                                         <i class="fas fa-graduation-cap me-1"></i> Promote Student
                                     </button>
                                 </div>
-                                
+
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle">
                                         <thead class="table-light">
@@ -159,7 +171,8 @@
                                                 @foreach ($sortedMappings as $index => $mapping)
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
-                                                        <td class="fw-semibold">{{ $mapping->academicYear->name ?? 'N/A' }}</td>
+                                                        <td class="fw-semibold">
+                                                            {{ $mapping->academicYear->name ?? 'N/A' }}</td>
                                                         <td>{{ $mapping->grade->name ?? 'N/A' }}</td>
                                                         <td>{{ $mapping->stream->name ?? 'N/A' }}</td>
                                                         <td>{{ $mapping->section->name ?? 'N/A' }}</td>
@@ -215,9 +228,10 @@
                                         </div> --}}
                                     </div>
                                 </div>
-                                
+
                                 <div class="table-responsive">
-                                    <table class="table table-hover table-editable align-middle" id="monthlyAttendanceTable">
+                                    <table class="table table-hover table-editable align-middle"
+                                        id="monthlyAttendanceTable">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>#</th>
@@ -234,7 +248,8 @@
                                                 <td colspan="7" class="text-center py-4">
                                                     <div class="py-3 text-muted">
                                                         <i class="fas fa-calendar fs-1 mb-3"></i>
-                                                        <p class="mb-0">Please select an academic year to view attendance data</p>
+                                                        <p class="mb-0">Please select an academic year to view attendance
+                                                            data</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -244,7 +259,8 @@
                             </div>
 
                             <!-- Examination Tab -->
-                            <div class="tab-pane fade" id="examination" role="tabpanel" aria-labelledby="examination-tab">
+                            <div class="tab-pane fade" id="examination" role="tabpanel"
+                                aria-labelledby="examination-tab">
                                 <div class="row mb-4">
                                     <div class="col-md-4">
                                         <label for="academic-mapping" class="form-label">Academic Year *</label>
@@ -280,7 +296,8 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-hover table-editable align-middle" id="marks-table">
+                                                <table class="table table-hover table-editable align-middle"
+                                                    id="marks-table">
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th>S.N</th>
@@ -311,6 +328,57 @@
                                 </div>
                             </div>
 
+                            <!-- Dicipline Note Tab -->
+                            <div class="tab-pane fade" id="discipline" role="tabpanel" aria-labelledby="discipline-tab">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="mb-0">Discipline Notes</h5>
+                                    <button class="btn btn-primary" id="addNoteBtn" data-bs-toggle="modal"
+                                        data-bs-target="#addNoteModal">
+                                        <i class="fas fa-plus me-1"></i> Add Note
+                                    </button>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="noteAcademicYear" class="form-label">Filter by Academic Year</label>
+                                        <select class="form-select" id="noteAcademicYear">
+                                            <option value="">All Academic Years</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="noteInteractor" class="form-label">Filter by Interactor</label>
+                                        <input type="text" class="form-control" id="noteInteractor"
+                                            placeholder="Search interactor..." >
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle" id="notesTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Academic Year</th>
+                                                <th>Note</th>
+                                                <th>Interactor</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4">
+                                                    <div class="py-3 text-muted">
+                                                        <i class="fas fa-sticky-note fs-1 mb-3"></i>
+                                                        <p class="mb-0">No discipline notes found</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                             <!-- Personal Details Tab -->
                             <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
                                 <div class="row">
@@ -335,7 +403,8 @@
                                                 <div class="row mb-3">
                                                     <div class="col-sm-4 fw-semibold">Status:</div>
                                                     <div class="col-sm-8">
-                                                        <span class="badge {{ $student->status ? 'bg-success' : 'bg-danger' }}">
+                                                        <span
+                                                            class="badge {{ $student->status ? 'bg-success' : 'bg-danger' }}">
                                                             {{ $student->status ? 'Active' : 'Inactive' }}
                                                         </span>
                                                     </div>
@@ -351,7 +420,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-lg-6">
                                         <div class="card border-0 shadow-sm">
                                             <div class="card-header bg-light">
@@ -375,6 +444,11 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+
+
                         </div>
                     </div>
                 </div>
@@ -427,14 +501,111 @@
             </div>
         </div>
     </div>
+
+
+
+
+    <!-- Add Discipline  Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNoteModalLabel">Add Discipline Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addNoteForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="noteAcademicMapping" class="form-label">Academic Year *</label>
+                        <select class="form-select" id="noteAcademicMapping" name="academic_map_id" required>
+                            <option value="">Select Academic Year</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="noteInteractorInput" class="form-label">Interactor *</label>
+                        <input type="text" class="form-control" value="-" id="noteInteractorInput" name="interactor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="noteContent" class="form-label">Note *</label>
+                        <textarea class="form-control" id="noteContent" name="note" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Discipline Modal -->
+<div class="modal fade" id="editNoteModal" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNoteModalLabel">Edit Discipline Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editNoteForm">
+                <input type="hidden" id="editNoteId" name="id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editNoteAcademicMapping" class="form-label">Academic Year</label>
+                        <select class="form-select" id="editNoteAcademicMapping" name="academic_map_id" disabled>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <div class="form-text">Academic year cannot be changed after creation</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNoteInteractor" class="form-label">Interactor *</label>
+                        <input type="text" class="form-control" id="editNoteInteractor" name="interactor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNoteContent" class="form-label">Note *</label>
+                        <textarea class="form-control" id="editNoteContent" name="note" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Discipline Confirmation Modal -->
+<div class="modal fade" id="deleteNoteModal" tabindex="-1" aria-labelledby="deleteNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteNoteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this discipline note? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteNote">Delete Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('script')
     <script src="{{ URL::asset('build/js/app.js') }}"></script>
     <script src="{{ URL::asset('build/libs/table-edits/build/table-edits.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <script src="{{ URL::asset('build/js/pages/student-profile.int.js') }}"></script>
-    
+
     <script>
         // Initialize Bootstrap tabs
         const triggerTabList = document.querySelectorAll('#studentTab button')
