@@ -17,7 +17,7 @@ var hasUnsavedChanges = false;
 var promotionData = null;
 var currentMappingToDelete = null;
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Set up CSRF token for all AJAX requests
     $.ajaxSetup({
         headers: {
@@ -46,6 +46,8 @@ $(document).ready(function() {
     initializeAttendanceSystem();
     initializeExamMarksSystem();
     initializePromotionSystem();
+    initializeDisciplineNoteSystem();
+
 });
 
 /**
@@ -56,7 +58,7 @@ function initializeAttendanceSystem() {
     loadStudentAcademicYears();
 
     // Handle academic year change with proper event delegation
-    $(document).on('change', '#academicYearSelect', function() {
+    $(document).on('change', '#academicYearSelect', function () {
         var academicYearId = $(this).val();
         if (academicYearId) {
             currentAcademicYearId = academicYearId;
@@ -74,17 +76,17 @@ function loadStudentAcademicYears() {
     $.ajax({
         url: '/student-academic-attendance/api/student/' + currentStudentId + '/academic-years',
         type: 'GET',
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 var options = '<option value="">Select Academic Year</option>';
-                $.each(response.data.academic_years, function(index, year) {
+                $.each(response.data.academic_years, function (index, year) {
                     var selected = year.is_active_year == 1 ? 'selected' : '';
-                    options += '<option value="' + year.academic_year_id + '" ' + selected + 
-                               ' data-academic-map-id="' + year.academic_map_id + '">' + 
-                               year.academic_year_name + ' (Grade: '+ year.grade_name + ') ' + '</option>';
+                    options += '<option value="' + year.academic_year_id + '" ' + selected +
+                        ' data-academic-map-id="' + year.academic_map_id + '">' +
+                        year.academic_year_name + ' (Grade: ' + year.grade_name + ') ' + '</option>';
                 });
                 $('#academicYearSelect').html(options);
-                
+
                 // Load attendance for selected year if any
                 var selectedYear = $('#academicYearSelect').val();
                 if (selectedYear) {
@@ -96,7 +98,7 @@ function loadStudentAcademicYears() {
                 toastr.error('Failed to load academic years');
             }
         },
-        error: function(error) {
+        error: function (error) {
             toastr.error('Error loading academic years');
             console.error(error);
         }
@@ -107,12 +109,12 @@ function loadStudentMonthlyAttendance(academicYearId) {
     $.ajax({
         url: '/student-academic-attendance/api/student/' + currentStudentId + '/attendance/' + academicYearId,
         type: 'GET',
-        beforeSend: function() {
+        beforeSend: function () {
             $('#monthlyAttendanceTable tbody').html(
                 '<tr><td colspan="7" class="text-center">Loading attendance data...</td></tr>'
             );
         },
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 populateAttendanceTable(response.data.attendance_records);
             } else {
@@ -122,7 +124,7 @@ function loadStudentMonthlyAttendance(academicYearId) {
                 );
             }
         },
-        error: function(error) {
+        error: function (error) {
             toastr.error('Error loading attendance data');
             console.error(error);
             $('#monthlyAttendanceTable tbody').html(
@@ -141,9 +143,9 @@ function populateAttendanceTable(attendanceData) {
     }
 
     var tbody = '';
-    $.each(attendanceData, function(index, record) {
+    $.each(attendanceData, function (index, record) {
         tbody += '<tr data-id="' + (record.id || 'new') + '" data-month-id="' + record.attendance_month_id + '">' +
-            '<td data-field="id" style="width: 80px">' + ( (index + 1)) + '</td>' +
+            '<td data-field="id" style="width: 80px">' + ((index + 1)) + '</td>' +
             '<td data-field="month_name">' + record.month_name + '</td>' +
             '<td data-field="present_days" class="editable">' + (record.present_days || '') + '</td>' +
             '<td data-field="late_days" class="editable">' + (record.late_days || '') + '</td>' +
@@ -165,10 +167,10 @@ function initializeAttendanceTableEdits() {
     $('#monthlyAttendanceTable').off('keypress', '.editable input');
 
     // Make cells editable on click
-    $('#monthlyAttendanceTable').on('click', '.editable', function() {
+    $('#monthlyAttendanceTable').on('click', '.editable', function () {
         // If already in edit mode, do nothing
         if ($(this).find('input').length > 0) return;
-        
+
         var value = $(this).text().trim();
         var field = $(this).data('field');
         var input = '<input type="number" class="form-control form-control-sm" value="' + value + '" min="0">';
@@ -177,12 +179,12 @@ function initializeAttendanceTableEdits() {
     });
 
     // Save on blur
-    $('#monthlyAttendanceTable').on('blur', '.editable input', function() {
+    $('#monthlyAttendanceTable').on('blur', '.editable input', function () {
         saveAttendanceCellValue($(this));
     });
 
     // Save on enter key
-    $('#monthlyAttendanceTable').on('keypress', '.editable input', function(e) {
+    $('#monthlyAttendanceTable').on('keypress', '.editable input', function (e) {
         if (e.which === 13) { // Enter key
             saveAttendanceCellValue($(this));
             return false;
@@ -215,7 +217,7 @@ function saveAttendanceCellValue($input) {
         academic_map_id: currentAcademicMapId,
         attendance_month_id: monthId
     };
-    
+
     // Only include the field that was actually edited
     data[field] = newValue || 0;
 
@@ -232,24 +234,24 @@ function saveAttendanceCellValue($input) {
         url: url,
         type: method,
         data: data,
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 // Update only the edited cell
                 $cell.text(newValue || '');
-                
+
                 // Update row ID if this was a new record
                 if (recordId === 'new' && response.data.record) {
                     $row.data('id', response.data.record.id);
                     // $row.find('td[data-field="id"]').text(response.data.record.id);
                 }
-                
+
                 toastr.success('Attendance record saved successfully');
             } else {
                 toastr.error('Failed to save attendance record: ' + (response.message || ''));
                 $cell.text(originalValue || '');
             }
         },
-        error: function(error) {
+        error: function (error) {
             var errorMsg = 'Error saving attendance record';
             if (error.responseJSON && error.responseJSON.message) {
                 errorMsg += ': ' + error.responseJSON.message;
@@ -271,7 +273,7 @@ function initializeExamMarksSystem() {
     $('#load-marks-btn').click(loadMarksData);
     $('#save-all-marks').click(saveAllMarks);
     $('#cancel-changes').click(cancelChanges);
-    
+
     // Load academic mappings for exam marks
     loadExamMarksAcademicMappings();
     initializeMarksTableEditing();
@@ -686,12 +688,12 @@ function showSuccess(message) {
 function initializePromotionSystem() {
     // Load academic mappings for promotion system
     loadPromotionAcademicMappings();
-    
+
     // Event listeners for promotion modal
     $('#promoteStudentBtn').click(loadPromotionForm);
     $(document).on('click', '.delete-mapping', handleDeleteMapping);
     $('#confirmDelete').click(confirmDeleteMapping);
-    
+
     // Form submission handling
     $('#promoteForm').on('submit', handlePromoteSubmit);
 }
@@ -701,7 +703,7 @@ function loadPromotionAcademicMappings() {
     $.ajax({
         url: `/students/${currentStudentId}/promote/data`,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 promotionData = response.data;
                 populateAcademicMappingsTable(response.data.academic_mappings);
@@ -712,7 +714,7 @@ function loadPromotionAcademicMappings() {
                 );
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             toastr.error('Error loading academic mappings: ' + error);
             $('#academicMappingsTableBody').html(
                 '<tr><td colspan="7" class="text-center">Error loading academic records</td></tr>'
@@ -747,9 +749,9 @@ function populateAcademicMappingsTable(mappings) {
                 <td>${mapping.section ? mapping.section.name : 'N/A'}</td>
                 <td>${mapping.shift ? mapping.shift.name : 'N/A'}</td>
                 <td>
-                    ${mapping.is_active_year ? 
-                        '<span class="badge bg-success">Yes</span>' : 
-                        '<span class="badge bg-secondary">No</span>'}
+                    ${mapping.is_active_year ?
+                '<span class="badge bg-success">Yes</span>' :
+                '<span class="badge bg-secondary">No</span>'}
                 </td>
             </tr>
         `;
@@ -764,7 +766,7 @@ function populateAcademicMappingsTable(mappings) {
 //     // var mode = button.data('mode') || 'default'; // set mode from button or default
 
 //     // Call your function with the mode
-    
+
 // });
 
 
@@ -775,7 +777,7 @@ function loadPromotionForm() {
     }
 
     $('#studentName').text(promotionData.student.name);
-    
+
     // Build the form HTML
     let formHtml = `
         <div class="row">
@@ -897,9 +899,9 @@ function loadPromotionForm() {
                     <td>${mapping.section ? mapping.section.name : 'N/A'}</td>
                     <td>${mapping.shift ? mapping.shift.name : 'N/A'}</td>
                     <td>
-                        ${mapping.is_active_year ? 
-                            '<span class="badge bg-success">Active</span>' : 
-                            '<span class="badge bg-secondary">Inactive</span>'}
+                        ${mapping.is_active_year ?
+                    '<span class="badge bg-success">Active</span>' :
+                    '<span class="badge bg-secondary">Inactive</span>'}
                     </td>
                   
                 </tr>
@@ -926,34 +928,34 @@ function loadPromotionForm() {
 function handleDeleteMapping() {
     const mappingId = $(this).data('id');
     const $button = $(this);
-    
+
     // Check if this is the active mapping (should be disabled but double-check)
     if ($button.prop('disabled')) {
         toastr.error('Cannot delete active academic mapping');
         return;
     }
-    
+
     // Show loading state
     $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
     $button.prop('disabled', true);
-    
+
     // Check for dependencies
     $.ajax({
         url: `/students/${currentStudentId}/promote/mapping/${mappingId}/dependencies`,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             $button.html('<i class="fas fa-trash"></i>');
             $button.prop('disabled', false);
-            
+
             if (response.status === 'success') {
                 // Store the mapping ID for deletion
                 currentMappingToDelete = mappingId;
-                
+
                 if (response.data.has_dependencies) {
                     // Show dependencies warning
                     $('#deleteDependencies').show();
                     $('#dependencyList').empty();
-                    
+
                     // Add each dependency to the list
                     Object.keys(response.data.dependencies).forEach(model => {
                         const count = response.data.dependencies[model];
@@ -963,7 +965,7 @@ function handleDeleteMapping() {
                             );
                         }
                     });
-                    
+
                     $('#confirmDelete').prop('disabled', true);
                     $('#deleteConfirmModal').find('.modal-body p').text(
                         'This academic mapping cannot be deleted because it is linked to other records.'
@@ -976,14 +978,14 @@ function handleDeleteMapping() {
                         'Are you sure you want to delete this academic mapping?'
                     );
                 }
-                
+
                 // Show the confirmation modal
                 $('#deleteConfirmModal').modal('show');
             } else {
                 toastr.error('Failed to check dependencies: ' + response.message);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             $button.html('<i class="fas fa-trash"></i>');
             $button.prop('disabled', false);
             toastr.error('Error checking dependencies: ' + error);
@@ -994,11 +996,11 @@ function handleDeleteMapping() {
 function confirmDeleteMapping() {
     const mappingId = currentMappingToDelete;
     const $button = $('#confirmDelete');
-    
+
     // Show loading state
     $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
     $button.prop('disabled', true);
-    
+
     // Perform deletion
     $.ajax({
         url: `/students/${currentStudentId}/promote/mapping/${mappingId}`,
@@ -1006,16 +1008,16 @@ function confirmDeleteMapping() {
         data: {
             _token: $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 toastr.success('Academic mapping deleted successfully');
-                
+
                 // Remove the row from the table
                 $(`#academicHistoryTable tr[data-id="${mappingId}"]`).remove();
-                
+
                 // Reload the main academic mappings table
                 loadPromotionAcademicMappings();
-                
+
                 // Close the modal
                 $('#deleteConfirmModal').modal('hide');
             } else {
@@ -1024,7 +1026,7 @@ function confirmDeleteMapping() {
                 $button.prop('disabled', false);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             toastr.error('Error deleting mapping: ' + error);
             $button.html('Delete');
             $button.prop('disabled', false);
@@ -1034,14 +1036,14 @@ function confirmDeleteMapping() {
 
 function handlePromoteSubmit(e) {
     e.preventDefault();
-    
+
     const $form = $(this);
     const $submitButton = $form.find('button[type="submit"]');
-    
+
     // Show loading state
     $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
     $submitButton.prop('disabled', true);
-    
+
     // Get form data
     const formData = {
         academic_year_id: $('#academic_year_id').val(),
@@ -1051,19 +1053,19 @@ function handlePromoteSubmit(e) {
         section_id: $('#section_id').val(),
         _token: $('meta[name="csrf-token"]').attr('content')
     };
-    
+
     // Submit form via AJAX
     $.ajax({
         url: `/students/${currentStudentId}/promote`,
         method: 'POST',
         data: formData,
-        success: function(response) {
+        success: function (response) {
             if (response.status === 'success') {
                 toastr.success(response.message);
-                
+
                 // Close the modal
                 $('#promoteModal').modal('hide');
-                
+
                 // Reload the academic mappings table
                 loadPromotionAcademicMappings();
             } else {
@@ -1072,26 +1074,409 @@ function handlePromoteSubmit(e) {
                 $submitButton.prop('disabled', false);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             let errorMessage = 'Error promoting student';
-            
+
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage += ': ' + xhr.responseJSON.message;
             } else if (xhr.responseJSON && xhr.responseJSON.errors) {
                 // Show validation errors
                 const errors = xhr.responseJSON.errors;
                 errorMessage = 'Please fix the following errors:<ul>';
-                
+
                 for (const field in errors) {
                     errorMessage += `<li>${errors[field][0]}</li>`;
                 }
-                
+
                 errorMessage += '</ul>';
             }
-            
+
             toastr.error(errorMessage);
             $submitButton.html('Promote Student');
             $submitButton.prop('disabled', false);
         }
     });
 }
+
+
+
+/**
+ * DISCIPLINE NOTE SYSTEM FUNCTIONS
+ */
+function initializeDisciplineNoteSystem() {
+    // Load academic mappings for notes
+    loadNoteAcademicMappings();
+
+    // Event listeners for notes system
+    $('#noteAcademicYear').change(filterNotes);
+    $('#noteInteractor').on('input', filterNotes);
+    $('#addNoteBtn').click(prepareAddNoteForm);
+    $('#addNoteForm').submit(handleAddNote);
+    $('#editNoteForm').submit(handleEditNote);
+    $('#confirmDeleteNote').click(handleDeleteNote);
+
+    // Load initial notes
+    loadDisciplineNotes();
+}
+
+function loadNoteAcademicMappings() {
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}/mappings`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const mappings = response.data.academic_mappings || [];
+
+                // Populate filter dropdown
+                let filterOptions = '<option value="">All Academic Years</option>';
+                let addNoteOptions = '<option value="">Select Academic Year</option>';
+
+                mappings.forEach(mapping => {
+                    const yearName = mapping.academic_year ? mapping.academic_year.name : 'N/A';
+                    const gradeName = mapping.grade ? mapping.grade.name : 'N/A';
+                    const optionText = `${yearName} (Grade: ${gradeName})`;
+
+                    const selected = mapping.is_active_year == 1 ? 'selected' : '';
+
+                    filterOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                    addNoteOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                });
+
+                $('#noteAcademicYear').html(filterOptions);
+                $('#noteAcademicMapping').html(addNoteOptions);
+                $('#editNoteAcademicMapping').html(addNoteOptions);
+            } else {
+                toastr.error('Failed to load academic mappings for notes');
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading academic mappings for notes');
+            console.error(error);
+        }
+    });
+}
+
+function loadDisciplineNotes() {
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}`,
+        method: 'GET',
+        beforeSend: function () {
+            $('#notesTable tbody').html(
+                '<tr><td colspan="6" class="text-center">Loading discipline notes...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateNotesTable(response.data.notes || []);
+            } else {
+                toastr.error('Failed to load discipline notes');
+                $('#notesTable tbody').html(
+                    '<tr><td colspan="6" class="text-center">Error loading discipline notes</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading discipline notes');
+            console.error(error);
+            $('#notesTable tbody').html(
+                '<tr><td colspan="6" class="text-center">Error loading discipline notes</td></tr>'
+            );
+        }
+    });
+}
+
+function populateNotesTable(notes) {
+    if (!notes || notes.length === 0) {
+        $('#notesTable tbody').html(
+            '<tr><td colspan="6" class="text-center">No discipline notes found</td></tr>'
+        );
+        return;
+    }
+
+    let tbody = '';
+    notes.forEach((note, index) => {
+        const date = new Date(note.created_at).toLocaleDateString();
+        const academicYear = note.academic_mapping && note.academic_mapping.academic_year
+            ? note.academic_mapping.academic_year.name
+            : 'N/A';
+
+
+        const gradeName = note.academic_mapping && note.academic_mapping.grade
+        ? note.academic_mapping.grade.name
+        : 'N/A';
+
+        // Truncate note for display
+        const truncatedNote = note.note.length > 100
+            ? note.note.substring(0, 100) + '...'
+            : note.note;
+
+        tbody += `
+            <tr data-note-id="${note.id}">
+                <td>${index + 1}</td>
+                <td>${academicYear} (Grade: ${gradeName})</td>
+                <td title="${note.note}">${truncatedNote}</td>
+                <td>${note.interactor}</td>
+                <td>${date}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-note" data-note-id="${note.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger delete-note" data-note-id="${note.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    $('#notesTable tbody').html(tbody);
+
+    // Add event listeners to action buttons
+    $('.edit-note').click(function () {
+        const noteId = $(this).data('note-id');
+        openEditNoteModal(noteId);
+    });
+
+    $('.delete-note').click(function () {
+        const noteId = $(this).data('note-id');
+        openDeleteNoteModal(noteId);
+    });
+}
+
+function filterNotes() {
+    const academicMapId = $('#noteAcademicYear').val();
+    const interactor = $('#noteInteractor').val().toLowerCase();
+
+    $.ajax({
+        url: `/discipline-notes/filter/students/${currentStudentId}`,
+        method: 'GET',
+        data: {
+            academic_map_id: academicMapId,
+            interactor: interactor
+        },
+        beforeSend: function () {
+            $('#notesTable tbody').html(
+                '<tr><td colspan="6" class="text-center">Filtering notes...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateNotesTable(response.data);
+            } else {
+                toastr.error('Failed to filter notes');
+                $('#notesTable tbody').html(
+                    '<tr><td colspan="6" class="text-center">Error filtering notes</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error filtering notes');
+            console.error(error);
+            $('#notesTable tbody').html(
+                '<tr><td colspan="6" class="text-center">Error filtering notes</td></tr>'
+            );
+        }
+    });
+}
+
+function prepareAddNoteForm() {
+    // Reset the form
+    $('#addNoteForm')[0].reset();
+}
+
+function handleAddNote(e) {
+    e.preventDefault();
+
+    const formData = {
+        academic_map_id: $('#noteAcademicMapping').val(),
+        interactor: $('#noteInteractorInput').val(),
+        note: $('#noteContent').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.academic_map_id || !formData.interactor || !formData.note) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#addNoteForm button[type="submit"]');
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}/mappings/${formData.academic_map_id}`,
+        method: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Discipline note added successfully');
+                $('#addNoteModal').modal('hide');
+                loadDisciplineNotes();
+            } else {
+                toastr.error('Failed to add note: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error adding discipline note';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Save Note');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openEditNoteModal(noteId) {
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}/notes/${noteId}`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const note = response.data;
+
+                // Populate the edit form
+                $('#editNoteId').val(note.id);
+                $('#editNoteInteractor').val(note.interactor);
+                $('#editNoteContent').val(note.note);
+
+                // Set the academic mapping (disabled)
+                const academicYear = note.academic_mapping && note.academic_mapping.academic_year
+                    ? note.academic_mapping.academic_year.name
+                    : 'N/A';
+                const grade = note.academic_mapping && note.academic_mapping.grade
+                    ? note.academic_mapping.grade.name
+                    : 'N/A';
+
+                $('#editNoteAcademicMapping').html(
+                    `<option value="${note.academic_map_id}" selected>${academicYear} (Grade: ${grade})</option>`
+                );
+
+                // Show the modal
+                $('#editNoteModal').modal('show');
+            } else {
+                toastr.error('Failed to load note details: ' + response.message);
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading note details');
+            console.error(error);
+        }
+    });
+}
+
+function handleEditNote(e) {
+    e.preventDefault();
+
+    const formData = {
+        id: $('#editNoteId').val(),
+        interactor: $('#editNoteInteractor').val(),
+        note: $('#editNoteContent').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.interactor || !formData.note) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#editNoteForm button[type="submit"]');
+    const academicMapId = $('#editNoteAcademicMapping').val();
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}/notes/${formData.id}`,
+        method: 'PUT',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Discipline note updated successfully');
+                $('#editNoteModal').modal('hide');
+                loadDisciplineNotes();
+            } else {
+                toastr.error('Failed to update note: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error updating discipline note';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Update Note');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openDeleteNoteModal(noteId) {
+    // Store the note ID in the modal for later use
+    $('#deleteNoteModal').data('note-id', noteId);
+    $('#deleteNoteModal').modal('show');
+}
+
+function handleDeleteNote() {
+    const noteId = $('#deleteNoteModal').data('note-id');
+    const $button = $('#confirmDeleteNote');
+
+    // Show loading state
+    $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $button.prop('disabled', true);
+
+    // We need to get the academic mapping ID from the table row
+    // const academicMapId = $(`tr[data-note-id="${noteId}"]`).closest('tr').data('academic-map-id') ||
+    //     prompt("Please enter the academic mapping ID for this note:");
+
+    // if (!academicMapId) {
+    //     toastr.error('Academic mapping ID is required to delete this note');
+    //     $button.html('Delete Note');
+    //     $button.prop('disabled', false);
+    //     return;
+    // }
+
+    $.ajax({
+        url: `/discipline-notes/students/${currentStudentId}/notes/${noteId}`,
+        method: 'DELETE',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Discipline note deleted successfully');
+                $('#deleteNoteModal').modal('hide');
+                loadDisciplineNotes();
+            } else {
+                toastr.error('Failed to delete note: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error deleting discipline note';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $button.html('Delete Note');
+            $button.prop('disabled', false);
+        }
+    });
+}
+

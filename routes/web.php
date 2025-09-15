@@ -15,6 +15,9 @@ use App\Http\Controllers\GradeStreamSubjectController;
 use App\Http\Controllers\ExamSettingController;
 use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\StudentPromoteController;
+use App\Http\Controllers\DisciplineNoteController;
+
+
 
 
 
@@ -229,14 +232,49 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Student promotion routes
-   Route::prefix('students/{student}/promote')->group(function () {
-    Route::get('/', [StudentPromoteController::class, 'showPromoteForm'])->name('students.promote.show');
-    Route::post('/', [StudentPromoteController::class, 'promoteStudent'])->name('students.promote');
-    Route::get('/history', [StudentPromoteController::class, 'promotionHistory'])->name('students.promote.history');
-    
-    // API routes for promotion data
-    Route::get('/data', [StudentPromoteController::class, 'getPromotionData'])->name('students.promote.data');
-    Route::get('/mapping/{mapping}/dependencies', [StudentPromoteController::class, 'checkDependencies'])->name('students.promote.mapping.dependencies');
-    Route::delete('/mapping/{mapping}', [StudentPromoteController::class, 'destroyMapping'])->name('students.promote.mapping.destroy');
-});
+    Route::prefix('students/{student}/promote')->group(function () {
+        Route::get('/', [StudentPromoteController::class, 'showPromoteForm'])->name('students.promote.show');
+        Route::post('/', [StudentPromoteController::class, 'promoteStudent'])->name('students.promote');
+        Route::get('/history', [StudentPromoteController::class, 'promotionHistory'])->name('students.promote.history');
+
+        // API routes for promotion data
+        Route::get('/data', [StudentPromoteController::class, 'getPromotionData'])->name('students.promote.data');
+        Route::get('/mapping/{mapping}/dependencies', [StudentPromoteController::class, 'checkDependencies'])->name('students.promote.mapping.dependencies');
+        Route::delete('/mapping/{mapping}', [StudentPromoteController::class, 'destroyMapping'])->name('students.promote.mapping.destroy');
+    });
+
+
+    // Discipline Note routes
+
+    Route::prefix('discipline-notes')->group(function () {
+        // Student-specific discipline notes
+        Route::prefix('students/{student}')->group(function () {
+            // Get all notes for a student
+            Route::get('/', [DisciplineNoteController::class, 'index'])->name('discipline.notes.index');
+
+            // Get academic mappings for a student
+            Route::get('/mappings', [DisciplineNoteController::class, 'getAcademicMappings'])->name('discipline.notes.mappings');
+
+            // Academic mapping specific notes
+            Route::prefix('mappings/{academicMapping}')->group(function () {
+                Route::get('/', [DisciplineNoteController::class, 'getNotesByMapping'])->name('discipline.notes.by-mapping');
+                Route::post('/', [DisciplineNoteController::class, 'store'])->name('discipline.notes.store');
+
+                // Individual note operations
+            });
+
+            Route::prefix('notes/{note}')->group(function () {
+                Route::get('/', [DisciplineNoteController::class, 'show'])->name('discipline.notes.show');
+                Route::put('/', [DisciplineNoteController::class, 'update'])->name('discipline.notes.update');
+                Route::delete('/', [DisciplineNoteController::class, 'destroy'])->name('discipline.notes.destroy');
+            });
+
+            
+        });
+
+        // Filter routes
+        Route::prefix('filter')->group(function () {
+            Route::get('students/{student}', [DisciplineNoteController::class, 'filter'])->name('discipline.notes.filter.student');
+        });
+    });
 });
