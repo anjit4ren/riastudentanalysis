@@ -5,6 +5,8 @@
 <?php $__env->startSection('css'); ?>
     <link rel="stylesheet" type="text/css"
         href="<?php echo e(URL::asset('build/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css')); ?>">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <style>
         .student-photo {
             width: 80px;
@@ -367,6 +369,7 @@
     <!-- bootstrap-datepicker js -->
     <script src="<?php echo e(URL::asset('build/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js')); ?>"></script>
     <script src="<?php echo e(URL::asset('build/js/pages/students.init.js')); ?>"></script>
+
 
 <?php $__env->stopSection(); ?>
 
