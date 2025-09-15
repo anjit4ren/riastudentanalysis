@@ -110,6 +110,24 @@
                                 </button>
                             </li>
 
+                            
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="corrective-tab" data-bs-toggle="tab"
+                                    data-bs-target="#corrective" type="button" role="tab" aria-controls="corrective"
+                                    aria-selected="false">
+                                    <i class="fas fa-hands-helping me-1"></i> Corrective Measures
+                                </button>
+                            </li>
+
+                            
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="remarks-tab" data-bs-toggle="tab" data-bs-target="#remarks"
+                                    type="button" role="tab" aria-controls="remarks" aria-selected="false">
+                                    <i class="fas fa-comment-alt me-1"></i> Remarks
+                                </button>
+                            </li>
+
+
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
                                     type="button" role="tab" aria-controls="details" aria-selected="false">
@@ -323,7 +341,7 @@
                                     <div class="col-md-6">
                                         <label for="noteInteractor" class="form-label">Filter by Interactor</label>
                                         <input type="text" class="form-control" id="noteInteractor"
-                                            placeholder="Search interactor..." >
+                                            placeholder="Search interactor...">
                                     </div>
                                 </div>
 
@@ -345,6 +363,118 @@
                                                     <div class="py-3 text-muted">
                                                         <i class="fas fa-sticky-note fs-1 mb-3"></i>
                                                         <p class="mb-0">No discipline notes found</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Corrective Measures Tab -->
+                            <div class="tab-pane fade" id="corrective" role="tabpanel" aria-labelledby="corrective-tab">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="mb-0">Corrective Measures</h5>
+                                    <button class="btn btn-primary" id="addMeasureBtn" data-bs-toggle="modal"
+                                        data-bs-target="#addMeasureModal">
+                                        <i class="fas fa-plus me-1"></i> Add Measure
+                                    </button>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="measureAcademicYear" class="form-label">Filter by Academic
+                                            Year</label>
+                                        <select class="form-select" id="measureAcademicYear">
+                                            <option value="">All Academic Years</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="measureStatus" class="form-label">Filter by Status</label>
+                                        <select class="form-select" id="measureStatus">
+                                            <option value="">All Status</option>
+                                            <option value="active">Active</option>
+                                            <option value="resolved">Resolved</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle" id="measuresTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Academic Year</th>
+                                                <th>Measure</th>
+                                                <th>Reason</th>
+                                                <th>Implemented</th>
+                                                <th>Resolved</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8" class="text-center py-4">
+                                                    <div class="py-3 text-muted">
+                                                        <i class="fas fa-hands-helping fs-1 mb-3"></i>
+                                                        <p class="mb-0">No corrective measures found</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                            <!-- Remarks Tab -->
+                            <div class="tab-pane fade" id="remarks" role="tabpanel" aria-labelledby="remarks-tab">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="mb-0">Student Remarks</h5>
+                                    <button class="btn btn-primary" id="addRemarkBtn" data-bs-toggle="modal"
+                                        data-bs-target="#addRemarkModal">
+                                        <i class="fas fa-plus me-1"></i> Add Remark
+                                    </button>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="remarkAcademicYear" class="form-label">Filter by Academic Year</label>
+                                        <select class="form-select" id="remarkAcademicYear">
+                                            <option value="">All Academic Years</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="remarkRole" class="form-label">Filter by Role</label>
+                                        <select class="form-select" id="remarkRole">
+                                            <option value="">All Roles</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle" id="remarksTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Academic Year</th>
+                                                <th>Role</th>
+                                                <th>Person</th>
+                                                <th>Remark</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4">
+                                                    <div class="py-3 text-muted">
+                                                        <i class="fas fa-comment-alt fs-1 mb-3"></i>
+                                                        <p class="mb-0">No remarks found</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -481,94 +611,348 @@
 
 
     <!-- Add Discipline  Note Modal -->
-<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addNoteModalLabel">Add Discipline Note</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNoteModalLabel">Add Discipline Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addNoteForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="noteAcademicMapping" class="form-label">Academic Year *</label>
+                            <select class="form-select" id="noteAcademicMapping" name="academic_map_id" required>
+                                <option value="">Select Academic Year</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noteInteractorInput" class="form-label">Interactor *</label>
+                            <input type="text" class="form-control" value="-" id="noteInteractorInput"
+                                name="interactor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noteContent" class="form-label">Note *</label>
+                            <textarea class="form-control" id="noteContent" name="note" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Note</button>
+                    </div>
+                </form>
             </div>
-            <form id="addNoteForm">
+        </div>
+    </div>
+
+    <!-- Edit Discipline Modal -->
+    <div class="modal fade" id="editNoteModal" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editNoteModalLabel">Edit Discipline Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editNoteForm">
+                    <input type="hidden" id="editNoteId" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editNoteAcademicMapping" class="form-label">Academic Year</label>
+                            <select class="form-select" id="editNoteAcademicMapping" name="academic_map_id" disabled>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <div class="form-text">Academic year cannot be changed after creation</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNoteInteractor" class="form-label">Interactor *</label>
+                            <input type="text" class="form-control" id="editNoteInteractor" name="interactor"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNoteContent" class="form-label">Note *</label>
+                            <textarea class="form-control" id="editNoteContent" name="note" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Discipline Confirmation Modal -->
+    <div class="modal fade" id="deleteNoteModal" tabindex="-1" aria-labelledby="deleteNoteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNoteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="noteAcademicMapping" class="form-label">Academic Year *</label>
-                        <select class="form-select" id="noteAcademicMapping" name="academic_map_id" required>
-                            <option value="">Select Academic Year</option>
-                            <!-- Will be populated by JavaScript -->
-                        </select>
+                    <p>Are you sure you want to delete this discipline note? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteNote">Delete Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Corrective Measure Modal -->
+    <div class="modal fade" id="addMeasureModal" tabindex="-1" aria-labelledby="addMeasureModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMeasureModalLabel">Add Corrective Measure</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addMeasureForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="measureAcademicMapping" class="form-label">Academic Year *</label>
+                            <select class="form-select" id="measureAcademicMapping" name="academic_map_id" required>
+                                <option value="">Select Academic Year</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="measureContent" class="form-label">Measure *</label>
+                            <textarea class="form-control" id="measureContent" name="measure" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="measureReason" class="form-label">Reason *</label>
+                            <textarea class="form-control" id="measureReason" name="reason" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="measureImplementedAt" class="form-label">Implemented Date</label>
+                            <input type="datetime-local" class="form-control" id="measureImplementedAt"
+                                name="implemented_at">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="noteInteractorInput" class="form-label">Interactor *</label>
-                        <input type="text" class="form-control" value="-" id="noteInteractorInput" name="interactor" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Measure</button>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Corrective Measure Modal -->
+    <div class="modal fade" id="editMeasureModal" tabindex="-1" aria-labelledby="editMeasureModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMeasureModalLabel">Edit Corrective Measure</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editMeasureForm">
+                    <input type="hidden" id="editMeasureId" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editMeasureAcademicMapping" class="form-label">Academic Year</label>
+                            <select class="form-select" id="editMeasureAcademicMapping" name="academic_map_id" disabled>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <div class="form-text">Academic year cannot be changed after creation</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMeasureContent" class="form-label">Measure *</label>
+                            <textarea class="form-control" id="editMeasureContent" name="measure" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMeasureReason" class="form-label">Reason *</label>
+                            <textarea class="form-control" id="editMeasureReason" name="reason" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMeasureImplementedAt" class="form-label">Implemented Date</label>
+                            <input type="datetime-local" class="form-control" id="editMeasureImplementedAt"
+                                name="implemented_at">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMeasureResolvedAt" class="form-label">Resolved Date</label>
+                            <input type="datetime-local" class="form-control" id="editMeasureResolvedAt"
+                                name="resolved_at">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Measure</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Corrective Measure Confirmation Modal -->
+    <div class="modal fade" id="deleteMeasureModal" tabindex="-1" aria-labelledby="deleteMeasureModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteMeasureModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this corrective measure? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteMeasure">Delete Measure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resolve Corrective Measure Modal -->
+    <div class="modal fade" id="resolveMeasureModal" tabindex="-1" aria-labelledby="resolveMeasureModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resolveMeasureModalLabel">Mark as Resolved</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to mark this corrective measure as resolved?</p>
                     <div class="mb-3">
-                        <label for="noteContent" class="form-label">Note *</label>
-                        <textarea class="form-control" id="noteContent" name="note" rows="4" required></textarea>
+                        <label for="resolveDate" class="form-label">Resolved Date</label>
+                        <input type="datetime-local" class="form-control" id="resolveDate"
+                            value="<?php echo e(now()->format('Y-m-d\TH:i')); ?>">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Note</button>
+                    <button type="button" class="btn btn-success" id="confirmResolveMeasure">Mark as Resolved</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Discipline Modal -->
-<div class="modal fade" id="editNoteModal" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editNoteModalLabel">Edit Discipline Note</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    <!-- Add Remark Modal -->
+    <div class="modal fade" id="addRemarkModal" tabindex="-1" aria-labelledby="addRemarkModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRemarkModalLabel">Add Remark</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addRemarkForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="remarkAcademicMapping" class="form-label">Academic Year *</label>
+                            <select class="form-select" id="remarkAcademicMapping" name="academic_map_id" required>
+                                <option value="">Select Academic Year</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remarkRoleInput" class="form-label">Role *</label>
+                            <select class="form-select" id="remarkRoleInput" name="remark_role" required>
+                                <option value="">Select Role</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remarkPersonInput" class="form-label">Person Name *</label>
+                            <input type="text" class="form-control" id="remarkPersonInput" name="remark_person"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remarkNoteInput" class="form-label">Remark *</label>
+                            <textarea class="form-control" id="remarkNoteInput" name="remark_note" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remarkDateInput" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="remarkDateInput" name="date" required
+                                value="<?php echo e(date('Y-m-d')); ?>">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Remark</button>
+                    </div>
+                </form>
             </div>
-            <form id="editNoteForm">
-                <input type="hidden" id="editNoteId" name="id">
+        </div>
+    </div>
+
+    <!-- Edit Remark Modal -->
+    <div class="modal fade" id="editRemarkModal" tabindex="-1" aria-labelledby="editRemarkModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRemarkModalLabel">Edit Remark</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editRemarkForm">
+                    <input type="hidden" id="editRemarkId" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editRemarkAcademicMapping" class="form-label">Academic Year</label>
+                            <select class="form-select" id="editRemarkAcademicMapping" name="academic_map_id" disabled>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <div class="form-text">Academic year cannot be changed after creation</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRemarkRoleInput" class="form-label">Role *</label>
+                            <select class="form-select" id="editRemarkRoleInput" name="remark_role" required>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRemarkPersonInput" class="form-label">Person Name *</label>
+                            <input type="text" class="form-control" id="editRemarkPersonInput" name="remark_person"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRemarkNoteInput" class="form-label">Remark *</label>
+                            <textarea class="form-control" id="editRemarkNoteInput" name="remark_note" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRemarkDateInput" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="editRemarkDateInput" name="date" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Remark</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Remark Confirmation Modal -->
+    <div class="modal fade" id="deleteRemarkModal" tabindex="-1" aria-labelledby="deleteRemarkModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRemarkModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="editNoteAcademicMapping" class="form-label">Academic Year</label>
-                        <select class="form-select" id="editNoteAcademicMapping" name="academic_map_id" disabled>
-                            <!-- Will be populated by JavaScript -->
-                        </select>
-                        <div class="form-text">Academic year cannot be changed after creation</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editNoteInteractor" class="form-label">Interactor *</label>
-                        <input type="text" class="form-control" id="editNoteInteractor" name="interactor" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editNoteContent" class="form-label">Note *</label>
-                        <textarea class="form-control" id="editNoteContent" name="note" rows="4" required></textarea>
-                    </div>
+                    <p>Are you sure you want to delete this remark? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Note</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteRemark">Delete Remark</button>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Discipline Confirmation Modal -->
-<div class="modal fade" id="deleteNoteModal" tabindex="-1" aria-labelledby="deleteNoteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteNoteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this discipline note? This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteNote">Delete Note</button>
             </div>
         </div>
     </div>
-</div>
 
 
 <?php $__env->stopSection(); ?>
