@@ -16,6 +16,11 @@ use App\Http\Controllers\ExamSettingController;
 use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\StudentPromoteController;
 use App\Http\Controllers\DisciplineNoteController;
+use App\Http\Controllers\CorrectiveMeasureController;
+use App\Http\Controllers\RemarkController;
+
+
+
 
 
 
@@ -268,13 +273,74 @@ Route::middleware(['auth'])->group(function () {
                 Route::put('/', [DisciplineNoteController::class, 'update'])->name('discipline.notes.update');
                 Route::delete('/', [DisciplineNoteController::class, 'destroy'])->name('discipline.notes.destroy');
             });
-
-            
         });
 
         // Filter routes
         Route::prefix('filter')->group(function () {
             Route::get('students/{student}', [DisciplineNoteController::class, 'filter'])->name('discipline.notes.filter.student');
+        });
+    });
+
+
+    Route::prefix('corrective-measures')->group(function () {
+        // Student-specific corrective measures
+        Route::prefix('students/{student}')->group(function () {
+            // Get all measures for a student
+            Route::get('/', [CorrectiveMeasureController::class, 'index'])->name('corrective.measures.index');
+
+            // Get academic mappings for a student
+            Route::get('/mappings', [CorrectiveMeasureController::class, 'getAcademicMappings'])->name('corrective.measures.mappings');
+
+            // Academic mapping specific measures
+            Route::prefix('mappings/{academicMapping}')->group(function () {
+                Route::get('/', [CorrectiveMeasureController::class, 'getMeasuresByMapping'])->name('corrective.measures.by-mapping');
+                Route::post('/', [CorrectiveMeasureController::class, 'store'])->name('corrective.measures.store');
+            });
+
+            // Individual measure operations
+            Route::prefix('measures/{measure}')->group(function () {
+                Route::get('/', [CorrectiveMeasureController::class, 'show'])->name('corrective.measures.show');
+                Route::put('/', [CorrectiveMeasureController::class, 'update'])->name('corrective.measures.update');
+                Route::delete('/', [CorrectiveMeasureController::class, 'destroy'])->name('corrective.measures.destroy');
+                Route::patch('/resolve', [CorrectiveMeasureController::class, 'resolve'])->name('corrective.measures.resolve');
+            });
+        });
+
+        // Filter routes
+        Route::prefix('filter')->group(function () {
+            Route::get('students/{student}', [CorrectiveMeasureController::class, 'filter'])->name('corrective.measures.filter.student');
+        });
+    });
+
+    Route::prefix('remarks')->group(function () {
+        // Student-specific remarks
+        Route::prefix('students/{student}')->group(function () {
+            // Get all remarks for a student
+            Route::get('/', [RemarkController::class, 'index'])->name('remarks.index');
+
+            // Get academic mappings for a student
+            Route::get('/mappings', [RemarkController::class, 'getAcademicMappings'])->name('remarks.mappings');
+
+            // Get remark roles
+            Route::get('/roles', [RemarkController::class, 'getRemarkRoles'])->name('remarks.roles');
+
+            // Academic mapping specific remarks
+            Route::prefix('mappings/{academicMapping}')->group(function () {
+                Route::get('/', [RemarkController::class, 'getRemarksByMapping'])->name('remarks.by-mapping');
+                Route::post('/', [RemarkController::class, 'store'])->name('remarks.store');
+            });
+
+            // Individual remark operations
+            Route::prefix('remarks/{remark}')->group(function () {
+                Route::get('/', [RemarkController::class, 'show'])->name('remarks.show');
+                Route::put('/', [RemarkController::class, 'update'])->name('remarks.update');
+                Route::delete('/', [RemarkController::class, 'destroy'])->name('remarks.destroy');
+            });
+        });
+
+        // Filter routes
+        Route::prefix('filter')->group(function () {
+            Route::get('students/{student}', [RemarkController::class, 'filter'])->name('remarks.filter.student');
         });
     });
 });

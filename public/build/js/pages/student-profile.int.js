@@ -47,6 +47,8 @@ $(document).ready(function () {
     initializeExamMarksSystem();
     initializePromotionSystem();
     initializeDisciplineNoteSystem();
+    initializeCorrectiveMeasureSystem();
+    initializeRemarkSystem();
 
 });
 
@@ -1116,7 +1118,10 @@ function initializeDisciplineNoteSystem() {
     $('#confirmDeleteNote').click(handleDeleteNote);
 
     // Load initial notes
-    loadDisciplineNotes();
+
+    loadNoteAcademicMappings();
+    loadDisciplineNotes()
+
 }
 
 function loadNoteAcademicMappings() {
@@ -1136,7 +1141,7 @@ function loadNoteAcademicMappings() {
                     const gradeName = mapping.grade ? mapping.grade.name : 'N/A';
                     const optionText = `${yearName} (Grade: ${gradeName})`;
 
-                    const selected = mapping.is_active_year == 1 ? 'selected' : '';
+                    const selected = '';
 
                     filterOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
                     addNoteOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
@@ -1157,6 +1162,7 @@ function loadNoteAcademicMappings() {
 }
 
 function loadDisciplineNotes() {
+
     $.ajax({
         url: `/discipline-notes/students/${currentStudentId}`,
         method: 'GET',
@@ -1202,8 +1208,8 @@ function populateNotesTable(notes) {
 
 
         const gradeName = note.academic_mapping && note.academic_mapping.grade
-        ? note.academic_mapping.grade.name
-        : 'N/A';
+            ? note.academic_mapping.grade.name
+            : 'N/A';
 
         // Truncate note for display
         const truncatedNote = note.note.length > 100
@@ -1480,3 +1486,871 @@ function handleDeleteNote() {
     });
 }
 
+
+/**
+ * CORRECTIVE MEASURES SYSTEM FUNCTIONS
+ */
+function initializeCorrectiveMeasureSystem() {
+    // Load academic mappings for measures
+    loadMeasureAcademicMappings();
+
+    // Event listeners for measures system
+    $('#measureAcademicYear').change(filterMeasures);
+    $('#measureStatus').change(filterMeasures);
+    $('#addMeasureBtn').click(prepareAddMeasureForm);
+    $('#addMeasureForm').submit(handleAddMeasure);
+    $('#editMeasureForm').submit(handleEditMeasure);
+    $('#confirmDeleteMeasure').click(handleDeleteMeasure);
+    $('#confirmResolveMeasure').click(handleResolveMeasure);
+
+    // Load initial measures
+    loadCorrectiveMeasures();
+}
+
+function loadMeasureAcademicMappings() {
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/mappings`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const mappings = response.data.academic_mappings || [];
+
+                // Populate filter dropdown
+                let filterOptions = '<option value="">All Academic Years</option>';
+                let addMeasureOptions = '<option value="">Select Academic Year</option>';
+
+                mappings.forEach(mapping => {
+                    const yearName = mapping.academic_year ? mapping.academic_year.name : 'N/A';
+                    const gradeName = mapping.grade ? mapping.grade.name : 'N/A';
+                    const optionText = `${yearName} (Grade: ${gradeName})`;
+
+                    const selected = '';
+
+                    filterOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                    addMeasureOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                });
+
+                $('#measureAcademicYear').html(filterOptions);
+                $('#measureAcademicMapping').html(addMeasureOptions);
+                $('#editMeasureAcademicMapping').html(addMeasureOptions);
+            } else {
+                toastr.error('Failed to load academic mappings for measures');
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading academic mappings for measures');
+            console.error(error);
+        }
+    });
+}
+
+function loadCorrectiveMeasures() {
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}`,
+        method: 'GET',
+        beforeSend: function () {
+            $('#measuresTable tbody').html(
+                '<tr><td colspan="8" class="text-center">Loading corrective measures...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateMeasuresTable(response.data.measures || []);
+            } else {
+                toastr.error('Failed to load corrective measures');
+                $('#measuresTable tbody').html(
+                    '<tr><td colspan="8" class="text-center">Error loading corrective measures</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading corrective measures');
+            console.error(error);
+            $('#measuresTable tbody').html(
+                '<tr><td colspan="8" class="text-center">Error loading corrective measures</td></tr>'
+            );
+        }
+    });
+}
+
+function populateMeasuresTable(measures) {
+    if (!measures || measures.length === 0) {
+        $('#measuresTable tbody').html(
+            '<tr><td colspan="8" class="text-center">No corrective measures found</td></tr>'
+        );
+        return;
+    }
+
+    let tbody = '';
+    measures.forEach((measure, index) => {
+        const implementedDate = measure.implemented_at
+            ? new Date(measure.implemented_at).toLocaleDateString()
+            : 'Not set';
+
+        const resolvedDate = measure.resolved_at
+            ? new Date(measure.resolved_at).toLocaleDateString()
+            : '-';
+
+        const academicYear = measure.academic_mapping && measure.academic_mapping.academic_year
+            ? measure.academic_mapping.academic_year.name
+            : 'N/A';
+
+        const gradeName = measure.academic_mapping && measure.academic_mapping.grade
+            ? measure.academic_mapping.grade.name
+            : 'N/A';
+
+        // Truncate measure and reason for display
+        const truncatedMeasure = measure.measure.length > 80
+            ? measure.measure.substring(0, 80) + '...'
+            : measure.measure;
+
+        const truncatedReason = measure.reason.length > 80
+            ? measure.reason.substring(0, 80) + '...'
+            : measure.reason;
+
+        const statusBadge = measure.resolved_at
+            ? '<span class="badge bg-success">Resolved</span>'
+            : '<span class="badge bg-warning">Active</span>';
+
+        tbody += `
+            <tr data-measure-id="${measure.id}">
+                <td>${index + 1}</td>
+                <td>${academicYear} (Grade: ${gradeName})</td>
+                <td title="${measure.measure}">${truncatedMeasure}</td>
+                <td title="${measure.reason}">${truncatedReason}</td>
+                <td>${implementedDate}</td>
+                <td>${resolvedDate}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-measure" data-measure-id="${measure.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${!measure.resolved_at ? `
+                        <button class="btn btn-outline-success resolve-measure" data-measure-id="${measure.id}">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        ` : ''}
+                        <button class="btn btn-outline-danger delete-measure" data-measure-id="${measure.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    $('#measuresTable tbody').html(tbody);
+
+    // Add event listeners to action buttons
+    $('.edit-measure').click(function () {
+        const measureId = $(this).data('measure-id');
+        openEditMeasureModal(measureId);
+    });
+
+    $('.resolve-measure').click(function () {
+        const measureId = $(this).data('measure-id');
+        openResolveMeasureModal(measureId);
+    });
+
+    $('.delete-measure').click(function () {
+        const measureId = $(this).data('measure-id');
+        openDeleteMeasureModal(measureId);
+    });
+}
+
+function filterMeasures() {
+    const academicMapId = $('#measureAcademicYear').val();
+    const status = $('#measureStatus').val();
+
+    $.ajax({
+        url: `/corrective-measures/filter/students/${currentStudentId}`,
+        method: 'GET',
+        data: {
+            academic_map_id: academicMapId,
+            status: status
+        },
+        beforeSend: function () {
+            $('#measuresTable tbody').html(
+                '<tr><td colspan="8" class="text-center">Filtering measures...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateMeasuresTable(response.data);
+            } else {
+                toastr.error('Failed to filter measures');
+                $('#measuresTable tbody').html(
+                    '<tr><td colspan="8" class="text-center">Error filtering measures</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error filtering measures');
+            console.error(error);
+            $('#measuresTable tbody').html(
+                '<tr><td colspan="8" class="text-center">Error filtering measures</td></tr>'
+            );
+        }
+    });
+}
+
+function prepareAddMeasureForm() {
+    // Reset the form
+    $('#addMeasureForm')[0].reset();
+    $('#measureImplementedAt').val(new Date().toISOString().slice(0, 16));
+}
+
+function handleAddMeasure(e) {
+    e.preventDefault();
+
+    const formData = {
+        academic_map_id: $('#measureAcademicMapping').val(),
+        measure: $('#measureContent').val(),
+        reason: $('#measureReason').val(),
+        implemented_at: $('#measureImplementedAt').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.academic_map_id || !formData.measure || !formData.reason) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#addMeasureForm button[type="submit"]');
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/mappings/${formData.academic_map_id}`,
+        method: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Corrective measure added successfully');
+                $('#addMeasureModal').modal('hide');
+                loadCorrectiveMeasures();
+            } else {
+                toastr.error('Failed to add measure: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error adding corrective measure';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Save Measure');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openEditMeasureModal(measureId) {
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/measures/${measureId}`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const measure = response.data;
+
+                // Populate the edit form
+                $('#editMeasureId').val(measure.id);
+                $('#editMeasureContent').val(measure.measure);
+                $('#editMeasureReason').val(measure.reason);
+
+                if (measure.implemented_at) {
+                    $('#editMeasureImplementedAt').val(
+                        new Date(measure.implemented_at).toISOString().slice(0, 16)
+                    );
+                }
+
+                if (measure.resolved_at) {
+                    $('#editMeasureResolvedAt').val(
+                        new Date(measure.resolved_at).toISOString().slice(0, 16)
+                    );
+                }
+
+                // Set the academic mapping (disabled)
+                const academicYear = measure.academic_mapping && measure.academic_mapping.academic_year
+                    ? measure.academic_mapping.academic_year.name
+                    : 'N/A';
+                const grade = measure.academic_mapping && measure.academic_mapping.grade
+                    ? measure.academic_mapping.grade.name
+                    : 'N/A';
+
+                $('#editMeasureAcademicMapping').html(
+                    `<option value="${measure.academic_map_id}" selected>${academicYear} (Grade: ${grade})</option>`
+                );
+
+                // Show the modal
+                $('#editMeasureModal').modal('show');
+            } else {
+                toastr.error('Failed to load measure details: ' + response.message);
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading measure details');
+            console.error(error);
+        }
+    });
+}
+
+function handleEditMeasure(e) {
+    e.preventDefault();
+
+    const formData = {
+        id: $('#editMeasureId').val(),
+        measure: $('#editMeasureContent').val(),
+        reason: $('#editMeasureReason').val(),
+        implemented_at: $('#editMeasureImplementedAt').val(),
+        resolved_at: $('#editMeasureResolvedAt').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.measure || !formData.reason) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#editMeasureForm button[type="submit"]');
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/measures/${formData.id}`,
+        method: 'PUT',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Corrective measure updated successfully');
+                $('#editMeasureModal').modal('hide');
+                loadCorrectiveMeasures();
+            } else {
+                toastr.error('Failed to update measure: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error updating corrective measure';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Update Measure');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openResolveMeasureModal(measureId) {
+    $('#resolveMeasureModal').data('measure-id', measureId);
+    $('#resolveDate').val(new Date().toISOString().slice(0, 16));
+    $('#resolveMeasureModal').modal('show');
+}
+
+function handleResolveMeasure() {
+    const measureId = $('#resolveMeasureModal').data('measure-id');
+    const resolvedAt = $('#resolveDate').val();
+    const $button = $('#confirmResolveMeasure');
+
+    if (!resolvedAt) {
+        toastr.error('Please select a resolved date');
+        return;
+    }
+
+    // Show loading state
+    $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $button.prop('disabled', true);
+
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/measures/${measureId}/resolve`,
+        method: 'PATCH',
+        data: {
+            resolved_at: resolvedAt,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Corrective measure marked as resolved');
+                $('#resolveMeasureModal').modal('hide');
+                loadCorrectiveMeasures();
+            } else {
+                toastr.error('Failed to resolve measure: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error resolving corrective measure';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $button.html('Mark as Resolved');
+            $button.prop('disabled', false);
+        }
+    });
+}
+
+function openDeleteMeasureModal(measureId) {
+    $('#deleteMeasureModal').data('measure-id', measureId);
+    $('#deleteMeasureModal').modal('show');
+}
+
+function handleDeleteMeasure() {
+    const measureId = $('#deleteMeasureModal').data('measure-id');
+    const $button = $('#confirmDeleteMeasure');
+
+    // Show loading state
+    $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $button.prop('disabled', true);
+
+    $.ajax({
+        url: `/corrective-measures/students/${currentStudentId}/measures/${measureId}`,
+        method: 'DELETE',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Corrective measure deleted successfully');
+                $('#deleteMeasureModal').modal('hide');
+                loadCorrectiveMeasures();
+            } else {
+                toastr.error('Failed to delete measure: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error deleting corrective measure';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $button.html('Delete Measure');
+            $button.prop('disabled', false);
+        }
+    });
+}
+
+
+/**
+ * REMARKS SYSTEM FUNCTIONS
+ */
+function initializeRemarkSystem() {
+    // Load academic mappings and roles for remarks
+    loadRemarkAcademicMappings();
+    loadRemarkRoles();
+
+    // Event listeners for remarks system
+    $('#remarkAcademicYear').change(filterRemarks);
+    $('#remarkRole').change(filterRemarks);
+    $('#addRemarkBtn').click(prepareAddRemarkForm);
+    $('#addRemarkForm').submit(handleAddRemark);
+    $('#editRemarkForm').submit(handleEditRemark);
+    $('#confirmDeleteRemark').click(handleDeleteRemark);
+
+    // Load initial remarks
+    loadRemarks();
+}
+
+function loadRemarkAcademicMappings() {
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/mappings`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const mappings = response.data.academic_mappings || [];
+
+                // Populate filter dropdown
+                let filterOptions = '<option value="">All Academic Years</option>';
+                let addRemarkOptions = '<option value="">Select Academic Year</option>';
+
+                mappings.forEach(mapping => {
+                    const yearName = mapping.academic_year ? mapping.academic_year.name : 'N/A';
+                    const gradeName = mapping.grade ? mapping.grade.name : 'N/A';
+                    const optionText = `${yearName} (Grade: ${gradeName})`;
+
+                    const selected = '';
+
+                    filterOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                    addRemarkOptions += `<option value="${mapping.id}" ${selected}>${optionText}</option>`;
+                });
+
+                $('#remarkAcademicYear').html(filterOptions);
+                $('#remarkAcademicMapping').html(addRemarkOptions);
+                $('#editRemarkAcademicMapping').html(addRemarkOptions);
+            } else {
+                toastr.error('Failed to load academic mappings for remarks');
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading academic mappings for remarks');
+            console.error(error);
+        }
+    });
+}
+
+function loadRemarkRoles() {
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/roles`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const roles = response.data.remark_roles || [];
+
+                // Populate role dropdowns
+                let filterOptions = '<option value="">All Roles</option>';
+                let addRemarkOptions = '<option value="">Select Role</option>';
+
+                roles.forEach(role => {
+                    filterOptions += `<option value="${role}">${role}</option>`;
+                    addRemarkOptions += `<option value="${role}">${role}</option>`;
+                });
+
+                $('#remarkRole').html(filterOptions);
+                $('#remarkRoleInput').html(addRemarkOptions);
+                $('#editRemarkRoleInput').html(addRemarkOptions);
+            } else {
+                toastr.error('Failed to load remark roles');
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading remark roles');
+            console.error(error);
+        }
+    });
+}
+
+function loadRemarks() {
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}`,
+        method: 'GET',
+        beforeSend: function () {
+            $('#remarksTable tbody').html(
+                '<tr><td colspan="7" class="text-center">Loading remarks...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateRemarksTable(response.data.remarks || []);
+            } else {
+                toastr.error('Failed to load remarks');
+                $('#remarksTable tbody').html(
+                    '<tr><td colspan="7" class="text-center">Error loading remarks</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading remarks');
+            console.error(error);
+            $('#remarksTable tbody').html(
+                '<tr><td colspan="7" class="text-center">Error loading remarks</td></tr>'
+            );
+        }
+    });
+}
+
+function populateRemarksTable(remarks) {
+    if (!remarks || remarks.length === 0) {
+        $('#remarksTable tbody').html(
+            '<tr><td colspan="7" class="text-center">No remarks found</td></tr>'
+        );
+        return;
+    }
+
+    let tbody = '';
+    remarks.forEach((remark, index) => {
+        const date = new Date(remark.date).toLocaleDateString();
+        const academicYear = remark.academic_mapping && remark.academic_mapping.academic_year
+            ? remark.academic_mapping.academic_year.name
+            : 'N/A';
+
+        const gradeName = remark.academic_mapping && remark.academic_mapping.grade
+            ? remark.academic_mapping.grade.name
+            : 'N/A';
+
+        // Truncate remark for display
+        const truncatedRemark = remark.remark_note.length > 100
+            ? remark.remark_note.substring(0, 100) + '...'
+            : remark.remark_note;
+
+        tbody += `
+            <tr data-remark-id="${remark.id}">
+                <td>${index + 1}</td>
+                <td>${academicYear} (Grade: ${gradeName})</td>
+                <td>${remark.remark_role}</td>
+                <td>${remark.remark_person}</td>
+                <td title="${remark.remark_note}">${truncatedRemark}</td>
+                <td>${date}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-remark" data-remark-id="${remark.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger delete-remark" data-remark-id="${remark.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    $('#remarksTable tbody').html(tbody);
+
+    // Add event listeners to action buttons
+    $('.edit-remark').click(function () {
+        const remarkId = $(this).data('remark-id');
+        openEditRemarkModal(remarkId);
+    });
+
+    $('.delete-remark').click(function () {
+        const remarkId = $(this).data('remark-id');
+        openDeleteRemarkModal(remarkId);
+    });
+}
+
+function filterRemarks() {
+    const academicMapId = $('#remarkAcademicYear').val();
+    const role = $('#remarkRole').val();
+
+    $.ajax({
+        url: `/remarks/filter/students/${currentStudentId}`,
+        method: 'GET',
+        data: {
+            academic_map_id: academicMapId,
+            remark_role: role
+        },
+        beforeSend: function () {
+            $('#remarksTable tbody').html(
+                '<tr><td colspan="7" class="text-center">Filtering remarks...</td></tr>'
+            );
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                populateRemarksTable(response.data);
+            } else {
+                toastr.error('Failed to filter remarks');
+                $('#remarksTable tbody').html(
+                    '<tr><td colspan="7" class="text-center">Error filtering remarks</td></tr>'
+                );
+            }
+        },
+        error: function (error) {
+            toastr.error('Error filtering remarks');
+            console.error(error);
+            $('#remarksTable tbody').html(
+                '<tr><td colspan="7" class="text-center">Error filtering remarks</td></tr>'
+            );
+        }
+    });
+}
+
+function prepareAddRemarkForm() {
+    // Reset the form
+    $('#addRemarkForm')[0].reset();
+    $('#remarkDateInput').val(new Date().toISOString().split('T')[0]);
+}
+
+function handleAddRemark(e) {
+    e.preventDefault();
+
+    const formData = {
+        academic_map_id: $('#remarkAcademicMapping').val(),
+        remark_role: $('#remarkRoleInput').val(),
+        remark_person: $('#remarkPersonInput').val(),
+        remark_note: $('#remarkNoteInput').val(),
+        date: $('#remarkDateInput').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.academic_map_id || !formData.remark_role || !formData.remark_person || !formData.remark_note || !formData.date) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#addRemarkForm button[type="submit"]');
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/mappings/${formData.academic_map_id}`,
+        method: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Remark added successfully');
+                $('#addRemarkModal').modal('hide');
+                loadRemarks();
+            } else {
+                toastr.error('Failed to add remark: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error adding remark';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Save Remark');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openEditRemarkModal(remarkId) {
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/remarks/${remarkId}`,
+        method: 'GET',
+        success: function (response) {
+            if (response.status === 'success') {
+                const remark = response.data;
+
+                // Populate the edit form
+                $('#editRemarkId').val(remark.id);
+                $('#editRemarkRoleInput').val(remark.remark_role);
+                $('#editRemarkPersonInput').val(remark.remark_person);
+                $('#editRemarkNoteInput').val(remark.remark_note);
+                $('#editRemarkDateInput').val(remark.date.split('T')[0]);
+
+                // Set the academic mapping (disabled)
+                const academicYear = remark.academic_mapping && remark.academic_mapping.academic_year
+                    ? remark.academic_mapping.academic_year.name
+                    : 'N/A';
+                const grade = remark.academic_mapping && remark.academic_mapping.grade
+                    ? remark.academic_mapping.grade.name
+                    : 'N/A';
+
+                $('#editRemarkAcademicMapping').html(
+                    `<option value="${remark.academic_map_id}" selected>${academicYear} (Grade: ${grade})</option>`
+                );
+
+                // Show the modal
+                $('#editRemarkModal').modal('show');
+            } else {
+                toastr.error('Failed to load remark details: ' + response.message);
+            }
+        },
+        error: function (error) {
+            toastr.error('Error loading remark details');
+            console.error(error);
+        }
+    });
+}
+
+function handleEditRemark(e) {
+    e.preventDefault();
+
+    const formData = {
+        id: $('#editRemarkId').val(),
+        remark_role: $('#editRemarkRoleInput').val(),
+        remark_person: $('#editRemarkPersonInput').val(),
+        remark_note: $('#editRemarkNoteInput').val(),
+        date: $('#editRemarkDateInput').val(),
+        _token: $('meta[name="csrf-token"]').attr('content')
+    };
+
+    // Validate form
+    if (!formData.remark_role || !formData.remark_person || !formData.remark_note || !formData.date) {
+        toastr.error('Please fill in all required fields');
+        return;
+    }
+
+    const $submitButton = $('#editRemarkForm button[type="submit"]');
+
+    // Show loading state
+    $submitButton.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $submitButton.prop('disabled', true);
+
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/remarks/${formData.id}`,
+        method: 'PUT',
+        data: formData,
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Remark updated successfully');
+                $('#editRemarkModal').modal('hide');
+                loadRemarks();
+            } else {
+                toastr.error('Failed to update remark: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error updating remark';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $submitButton.html('Update Remark');
+            $submitButton.prop('disabled', false);
+        }
+    });
+}
+
+function openDeleteRemarkModal(remarkId) {
+    $('#deleteRemarkModal').data('remark-id', remarkId);
+    $('#deleteRemarkModal').modal('show');
+}
+
+function handleDeleteRemark() {
+    const remarkId = $('#deleteRemarkModal').data('remark-id');
+    const $button = $('#confirmDeleteRemark');
+
+    // Show loading state
+    $button.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $button.prop('disabled', true);
+
+    $.ajax({
+        url: `/remarks/students/${currentStudentId}/remarks/${remarkId}`,
+        method: 'DELETE',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                toastr.success('Remark deleted successfully');
+                $('#deleteRemarkModal').modal('hide');
+                loadRemarks();
+            } else {
+                toastr.error('Failed to delete remark: ' + response.message);
+            }
+        },
+        error: function (error) {
+            let errorMsg = 'Error deleting remark';
+            if (error.responseJSON && error.responseJSON.message) {
+                errorMsg += ': ' + error.responseJSON.message;
+            }
+            toastr.error(errorMsg);
+            console.error(error);
+        },
+        complete: function () {
+            $button.html('Delete Remark');
+            $button.prop('disabled', false);
+        }
+    });
+}
