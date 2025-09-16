@@ -18,6 +18,7 @@ use App\Http\Controllers\StudentPromoteController;
 use App\Http\Controllers\DisciplineNoteController;
 use App\Http\Controllers\CorrectiveMeasureController;
 use App\Http\Controllers\RemarkController;
+use App\Http\Controllers\StudentReportController;
 
 
 
@@ -343,4 +344,14 @@ Route::middleware(['auth'])->group(function () {
             Route::get('students/{student}', [RemarkController::class, 'filter'])->name('remarks.filter.student');
         });
     });
+
+    // Student Report routes
+    Route::prefix('students/{student}/report')->group(function () {
+        Route::get('/', [StudentReportController::class, 'generateReport'])->name('students.report');
+        Route::get('/pdf', [StudentReportController::class, 'exportPdf'])->name('students.report.pdf');
+        Route::get('/comprehensive-report', [StudentReportController::class, 'showReport'])->name('students.comprehensive-report');
+
+    
+    });
+
 });
