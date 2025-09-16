@@ -46,10 +46,10 @@
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2 mt-2">
-                                        <button class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-edit me-1"></i> Generate Report
-                                        </button>
-
+                                        <a href="{{ route('students.comprehensive-report', $student->id) }}"
+                                            class="btn btn-outline-primary btn-sm" target="_blank">
+                                            <i class="fas fa-file-alt me-1"></i> Generate Report
+                                        </a>
                                     </div>
                                 </div>
 

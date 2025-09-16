@@ -547,8 +547,8 @@ function loadSubjectsForAcademicMapping() {
                 subjects.forEach((subject, i) => {
                     const row = `
                         <tr data-id="${subject.id}">
-                            <td data-field="subject_code">${i + 1}</td>
-                            <td data-field="subject_name">${subject.subject_name || 'N/A'}</td>
+                            <td >${i + 1}</td>
+                            <td >${subject.subject_name || 'N/A'}</td>
                             <td data-field="marks_obtained" class="editable"></td>
                             <td data-field="grade" class="editable"></td>
                             <td data-field="grade_point" class="editable"></td>
