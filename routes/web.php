@@ -362,5 +362,17 @@ Route::get('/artisan/{command}', function ($command) {
         Artisan::call('migrate', ['--force' => true]);
         return "Migration executed.";
     }
+
+    if ($command === 'storage-link') {
+        Artisan::call('storage:link');
+        return 'Storage link created successfully!';
+    }
+
+
     return "Not allowed.";
+
+
+    
+
+    
 });
