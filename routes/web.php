@@ -19,6 +19,8 @@ use App\Http\Controllers\DisciplineNoteController;
 use App\Http\Controllers\CorrectiveMeasureController;
 use App\Http\Controllers\RemarkController;
 use App\Http\Controllers\StudentReportController;
+use Illuminate\Support\Facades\Artisan;
+
 
 
 
@@ -350,8 +352,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [StudentReportController::class, 'generateReport'])->name('students.report');
         Route::get('/pdf', [StudentReportController::class, 'exportPdf'])->name('students.report.pdf');
         Route::get('/comprehensive-report', [StudentReportController::class, 'showReport'])->name('students.comprehensive-report');
-
-    
     });
+
+
+    Route::get('/artisan/{command}', function ($command) {
+        
+        if ($command === 'migrate') {
+            Artisan::call('migrate', ['--force' => true]);
+            return "Migration executed.";
+        }
+        return "Not allowed.";
+    });
+
 
 });
