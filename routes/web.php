@@ -353,16 +353,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pdf', [StudentReportController::class, 'exportPdf'])->name('students.report.pdf');
         Route::get('/comprehensive-report', [StudentReportController::class, 'showReport'])->name('students.comprehensive-report');
     });
+});
 
 
-    Route::get('/artisan/{command}', function ($command) {
-        
-        if ($command === 'migrate') {
-            Artisan::call('migrate', ['--force' => true]);
-            return "Migration executed.";
-        }
-        return "Not allowed.";
-    });
+Route::get('/artisan/{command}', function ($command) {
 
-
+    if ($command === 'migrate') {
+        Artisan::call('migrate', ['--force' => true]);
+        return "Migration executed.";
+    }
+    return "Not allowed.";
 });
